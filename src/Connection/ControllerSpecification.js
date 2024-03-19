@@ -19,14 +19,14 @@ app.get('/Specification/Get', (req, res) => {
 });
 
 app.post('/Specification/Post', (req, res) => {
-    const { Id, ParentId, NameElement, QuantityPerParent, Measure } = req.body;
+    const { ParentId, NameElement, QuantityPerParent, Measure } = req.body;
 
-    if (!Id || !ParentId || !NameElement || !QuantityPerParent || !Measure) {
-        return res.status(400).json({ message: 'Id, ParentId, NameElement, QuantityPerParent, and Measure are required' });
+    if ( !ParentId || !NameElement || !QuantityPerParent || !Measure) {
+        return res.status(400).json({ message: ' ParentId, NameElement, QuantityPerParent, and Measure are required' });
     }
 
-    const query = "INSERT INTO Specification (Id, ParentId, NameElement, QuantityPerParent, Measure) VALUES (?, ?, ?, ?, ?)";
-    sql.query(connectionString, query, [Id, ParentId, NameElement, QuantityPerParent, Measure], (err, result) => {
+    const query = "INSERT INTO Specification (ParentId, NameElement, QuantityPerParent, Measure) VALUES (?, ?, ?, ?)";
+    sql.query(connectionString, query, [ParentId, NameElement, QuantityPerParent, Measure], (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).json({ message: 'Internal Server Error' });
@@ -36,7 +36,7 @@ app.post('/Specification/Post', (req, res) => {
     });
 });
 
-app.put('/specifications/Put/:id', (req, res) => {
+app.put('/Specifications/Put/:id', (req, res) => {
     const { id } = req.params;
     const { ParentId, NameElement, QuantityPerParent, Measure } = req.body;
 
@@ -57,7 +57,7 @@ app.put('/specifications/Put/:id', (req, res) => {
     });
 });
 
-app.delete('/specifications/Delete/:id', (req, res) => {
+app.delete('/Specifications/Delete/:id', (req, res) => {
     const { id } = req.params;
 
     const query = `DELETE FROM Specification WHERE Id=?`;
@@ -68,6 +68,9 @@ app.delete('/specifications/Delete/:id', (req, res) => {
             console.error(err);
             res.status(500).json({ message: 'Internal Server Error' });
         } else {
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ message: 'Specification not found' });
+            }
             res.status(200).json({ message: 'Specification deleted successfully' });
         }
     });
