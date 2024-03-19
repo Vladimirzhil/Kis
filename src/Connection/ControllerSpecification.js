@@ -1,11 +1,11 @@
 const connectionString = require('./connection.js');
 const express = require('express');
 const sql = require('msnodesqlv8');
-const app = express();
+const router = express.Router();
 
-app.use(express.json());
+router.use(express.json());
 
-app.get('/Specification/Get', (req, res) => {
+router.get('/Get', (req, res) => {
     const query = "SELECT * FROM Specification";
 
     sql.query(connectionString, query, (err, rows) => {
@@ -18,7 +18,7 @@ app.get('/Specification/Get', (req, res) => {
     });
 });
 
-app.post('/Specification/Post', (req, res) => {
+router.post('/Post', (req, res) => {
     const { ParentId, NameElement, QuantityPerParent, Measure } = req.body;
 
     if ( !ParentId || !NameElement || !QuantityPerParent || !Measure) {
@@ -36,7 +36,7 @@ app.post('/Specification/Post', (req, res) => {
     });
 });
 
-app.put('/Specifications/Put/:id', (req, res) => {
+router.put('/Put/:id', (req, res) => {
     const { id } = req.params;
     const { ParentId, NameElement, QuantityPerParent, Measure } = req.body;
 
@@ -57,7 +57,7 @@ app.put('/Specifications/Put/:id', (req, res) => {
     });
 });
 
-app.delete('/Specifications/Delete/:id', (req, res) => {
+router.delete('/Delete/:id', (req, res) => {
     const { id } = req.params;
 
     const query = `DELETE FROM Specification WHERE Id=?`;
@@ -76,7 +76,4 @@ app.delete('/Specifications/Delete/:id', (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+module.exports = router;
