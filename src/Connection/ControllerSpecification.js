@@ -19,14 +19,14 @@ router.get('/Get', (req, res) => {
 });
 
 router.post('/Post', (req, res) => {
-    const { ParentId, Descrition, QuantityPerParent, Measure } = req.body;
+    const { ParentId, Description, QuantityPerParent, Measure } = req.body;
 
-    if ( !Descrition || !QuantityPerParent || !Measure) {
-        return res.status(400).json({ message: ' ParentId, Descrition, QuantityPerParent, and Measure are required' });
+    if ( !Description || !QuantityPerParent || !Measure) {
+        return res.status(400).json({ message: ' ParentId, Description, QuantityPerParent, and Measure are required' });
     }
 
-    const query = "INSERT INTO Specification (ParentId, Descrition, QuantityPerParent, Measure) VALUES (?, ?, ?, ?)";
-    sql.query(connectionString, query, [ParentId, Descrition, QuantityPerParent, Measure], (err, result) => {
+    const query = "INSERT INTO Specification (ParentId, Description, QuantityPerParent, Measure) VALUES (?, ?, ?, ?)";
+    sql.query(connectionString, query, [ParentId, Description, QuantityPerParent, Measure], (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).json({ message: 'Internal Server Error' });
@@ -38,14 +38,14 @@ router.post('/Post', (req, res) => {
 
 router.put('/Put/:id', (req, res) => {
     const { id } = req.params;
-    const { ParentId, Descrition, QuantityPerParent, Measure } = req.body;
+    const { ParentId, Description, QuantityPerParent, Measure } = req.body;
 
-    if ( !Descrition || !QuantityPerParent || !Measure) {
-        return res.status(400).json({ message: 'ParentId, Descrition, QuantityPerParent, and Measure are required' });
+    if ( !Description || !QuantityPerParent || !Measure) {
+        return res.status(400).json({ message: 'ParentId, Description, QuantityPerParent, and Measure are required' });
     }
 
-    const query = `UPDATE Specification SET ParentId=?, Descrition=?, QuantityPerParent=?, Measure=? WHERE Id=?`;
-    const values = [ParentId, Descrition, QuantityPerParent, Measure, id];
+    const query = `UPDATE Specification SET ParentId=?, Description=?, QuantityPerParent=?, Measure=? WHERE Id=?`;
+    const values = [ParentId, Description, QuantityPerParent, Measure, id];
 
     sql.query(connectionString, query, values, (err, result) => {
         if (err) {
