@@ -20,14 +20,14 @@ router.get('/Get', (req, res) => {
 });
 
 router.post('/Post', (req, res) => {
-    const { SpecificationId, Orderdate, ClientName,Count, Measure } = req.body;
+    const { SpecificationId, Orderdate, ClientName,Count } = req.body;
 
-    if ( !SpecificationId || !Orderdate || !ClientName || !Count || !Measure) {
-        return res.status(400).json({ message: ' SpecificationId, Orderdate , ClientName , Count and Measure are required' });
+    if ( !SpecificationId || !Orderdate || !ClientName || !Count) {
+        return res.status(400).json({ message: ' SpecificationId, Orderdate , ClientName and Count  are required' });
     }
 
-    const query = "INSERT INTO Order_ (SpecificationId, Orderdate , ClientName , Count ,Measure ) VALUES (?, ?, ?, ?,?)";
-    sql.query(connectionString, query, [SpecificationId, Orderdate, ClientName,Count, Measure], (err, result) => {
+    const query = "INSERT INTO Order_ (SpecificationId, Orderdate , ClientName , Count  ) VALUES (?, ?, ?, ?)";
+    sql.query(connectionString, query, [SpecificationId, Orderdate, ClientName,Count], (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).json({ message: 'Internal Server Error' });
@@ -39,14 +39,14 @@ router.post('/Post', (req, res) => {
 
 router.put('/Put/:id', (req, res) => {
     const { id } = req.params;
-    const { SpecificationId, Orderdate, ClientName,Count, Measure } = req.body;
+    const { SpecificationId, Orderdate, ClientName,Count } = req.body;
 
-    if (!SpecificationId || !Orderdate || !ClientName || !Count || !Measure) {
-        return res.status(400).json({ message: ' SpecificationId, Orderdate , ClientName , Count and Measure are required' });
+    if (!SpecificationId || !Orderdate || !ClientName || !Count) {
+        return res.status(400).json({ message: ' SpecificationId, Orderdate , ClientName and Count are required' });
     }
 
-    const query = `UPDATE Order_ SET SpecificationId=?, Orderdate=?, ClientName=?,Count=?, Measure=? WHERE Id=?`;
-    const values = [SpecificationId, Orderdate, ClientName,Count, Measure, id];
+    const query = `UPDATE Order_ SET SpecificationId=?, Orderdate=?, ClientName=?,Count=? WHERE Id=?`;
+    const values = [SpecificationId, Orderdate, ClientName,Count, id];
 
     sql.query(connectionString, query, values, (err, result) => {
         if (err) {
