@@ -5,7 +5,7 @@ import {BrowserRouter,Routes,Route} from 'react-router-dom';
 import {Home} from './Home';
 import SpecificationInterface from './SpecificationInterface';
 import {Order} from './Order';
-import {Stock} from './Stock';
+import Stock from './Stock';
 import './App.css';
 
 function App() {

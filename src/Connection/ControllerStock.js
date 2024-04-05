@@ -18,6 +18,23 @@ router.get('/Get', (req, res) => {
         }
     });
 });
+router.get('/Get/Date',(req,res)=>{
+    const Dateoperation = req.query.Dateoperation;
+
+    if ( !Dateoperation) {
+        return res.status(400).json({ message: 'Dateoperation are required' });
+    }
+
+    const query ='SELECT SpecificationId, SUM(Receivedquantity) - SUM(Shippedquantity) from Stock Where Dateoperation<=? Group by SpecificationId '
+    sql.query(connectionString, query, [Dateoperation], (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        } else {
+            res.status(201).json(result);
+        }
+    });
+});
 
 router.post('/Post', (req, res) => {
     const {SpecificationId, Receivedquantity, Shippedquantity, Dateoperation} = req.body;
