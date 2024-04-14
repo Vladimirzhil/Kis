@@ -50,4 +50,14 @@
   font-size: 16px; /* Увеличим размер шрифта */
   width: 200px; /* Установим фиксированную ширину кнопок */
 }
+.control-button{
+  background-color: #17a2b8;
+  border-style: none;
+  margin: 0px; /* Увеличим отступы */
+  padding: 15px 5px; /* Увеличим отступы внутри кнопки */
+  font-size: 12px; /* Увеличим размер шрифта */
+  width: 100px; /* Установим фиксированную ширину кнопок */
+  height: 15px;
+  line-height: 0px;
+}
 
