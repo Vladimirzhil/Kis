@@ -61,9 +61,9 @@ router.put('/Put/:id', (req, res) => {
     if (!SpecificationId || !Dateoperation) {
         return res.status(400).json({ message: 'SpecificationId, Receivedquantity, Shippedquantity and Dateoperation are required' });
     }
-
+    
     const query = `UPDATE Stock SET SpecificationId=?, Receivedquantity=?, Shippedquantity=?, Dateoperation=? WHERE Id=?`;
-    const values = [SpecificationId, Receivedquantity, Shippedquantity, Dateoperation];
+    const values = [SpecificationId, Receivedquantity, Shippedquantity, Dateoperation, id];
 
     sql.query(connectionString, query, values, (err, result) => {
         if (err) {
