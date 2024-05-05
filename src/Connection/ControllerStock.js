@@ -18,14 +18,16 @@ router.get('/Get', (req, res) => {
         }
     });
 });
-router.get('/Get/Date',(req,res)=>{
+router.get('/Get/Date', (req, res) => {
     const Dateoperation = req.query.Dateoperation;
 
-    if ( !Dateoperation) {
+    console.log("Received Dateoperation:", Dateoperation); // Выводим в консоль значение параметра Dateoperation
+
+    if (!Dateoperation) {
         return res.status(400).json({ message: 'Dateoperation are required' });
     }
 
-    const query ='SELECT SpecificationId, SUM(Receivedquantity) - SUM(Shippedquantity) from Stock Where Dateoperation<=? Group by SpecificationId '
+    const query ='SELECT Specification.Description, SUM(Receivedquantity) - SUM(Shippedquantity) AS TotalQuantity FROM Stock INNER JOIN Specification ON Specification.id = Stock.SpecificationId WHERE Dateoperation <= CAST(? AS DATE)  GROUP BY Description';
     sql.query(connectionString, query, [Dateoperation], (err, result) => {
         if (err) {
             console.error(err);

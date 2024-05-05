@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button, Input } from 'semantic-ui-react';
 import Modal from 'react-modal';
 
@@ -14,6 +14,9 @@ export default function ReadSpecification() {
         Shippedquantity: '',
         Dateoperation: ''
     });
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [dateForCalculation, setDateForCalculation] = useState('');
+    const [tableData, setTableData] = useState([]);
 
     useEffect(() => {
         getData();
@@ -98,20 +101,42 @@ export default function ReadSpecification() {
         setCreateModalIsOpen(false);
     };
 
+    const handleDateInputChange = (event) => {
+        const { value } = event.target;
+        setDateForCalculation(value);
+    };
+
+    const openModal = () => {
+        setModalIsOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalIsOpen(false);
+    };
+
+    const getDataforDate = () => {
+        axios.get(`http://localhost:3001/api/stocks/Get/Date?Dateoperation=${dateForCalculation}`)
+            .then((response) => {
+                setTableData(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    };
+
     return (
         <div>
             <Table singleLine>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell>SpecificationId</Table.HeaderCell>
-                        <Table.HeaderCell>Receivedquantity</Table.HeaderCell>
-                        <Table.HeaderCell>Shippedquantity</Table.HeaderCell>
-                        <Table.HeaderCell>Dateoperation</Table.HeaderCell>
-                        <Table.HeaderCell>Update</Table.HeaderCell>
-                        <Table.HeaderCell>Delete</Table.HeaderCell>
+                        <Table.HeaderCell>Идентификатор спецификации</Table.HeaderCell>
+                        <Table.HeaderCell>Прибыло</Table.HeaderCell>
+                        <Table.HeaderCell>Убыло</Table.HeaderCell>
+                        <Table.HeaderCell>Дата операции</Table.HeaderCell>
+                        <Table.HeaderCell>Обновить</Table.HeaderCell>
+                        <Table.HeaderCell>Удалить</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
-
                 <Table.Body>
                     {APIData.map((data) => (
                         <Table.Row key={data.Id}>
@@ -129,29 +154,30 @@ export default function ReadSpecification() {
                     ))}
                 </Table.Body>
             </Table>
-            <Button className="control-button" onClick={openCreateModal}>Добавить</Button>
+            <Button className="custom-button" onClick={openCreateModal}>Добавить</Button>
+            <Button className="custom-button" onClick={openModal}>Расчет на дату</Button>
             <Modal isOpen={updateModalIsOpen} onRequestClose={closeUpdateModal}>
-                <h2>Update Data</h2>
+                <h2>Обновить запись</h2>
                 <Input 
-                    label="SpecificationId" 
+                    label="Идентификатор спецификации" 
                     name="SpecificationId" 
                     value={formData.SpecificationId} 
                     onChange={handleInputChange} 
                 />
                 <Input 
-                    label="Receivedquantity" 
+                    label="Прибыло" 
                     name="Receivedquantity" 
                     value={formData.Receivedquantity} 
                     onChange={handleInputChange} 
                 />
                 <Input 
-                    label="Shippedquantity" 
+                    label="Убыло" 
                     name="Shippedquantity" 
                     value={formData.Shippedquantity} 
                     onChange={handleInputChange} 
                 />
                 <Input 
-                    label="Dateoperation" 
+                    label="Дата операции" 
                     name="Dateoperation" 
                     value={formData.Dateoperation} 
                     onChange={handleInputChange} 
@@ -164,29 +190,29 @@ export default function ReadSpecification() {
                 </div>
             </Modal>
             <Modal isOpen={createModalIsOpen} onRequestClose={closeCreateModal}>
-                <h2>Create Data</h2>
+                <h2>Создать запись</h2>
                 <Input 
-                    label="SpecificationId" 
+                    label="Идентификатор спецификации" 
                     name="SpecificationId" 
                     value={formData.SpecificationId} 
                     onChange={handleInputChange} 
                 />
                 <Input 
-                    label="Receivedquantity" 
+                    label="Прибыло" 
                     name="Receivedquantity" 
                     value={formData.Receivedquantity} 
                     onChange={handleInputChange} 
                 />
                 <Input 
-                    label="Shippedquantity" 
+                    label="Убыло" 
                     name="Shippedquantity" 
                     value={formData.Shippedquantity} 
                     onChange={handleInputChange} 
                 />
                 <Input 
-                    label="Dateoperation" 
+                    label="Дата операции" 
                     name="Dateoperation" 
-                    value={formData.Measure} 
+                    value={formData.Dateoperation} 
                     onChange={handleInputChange} 
                 />
                 <div style={{ marginTop: '10px' }}>
@@ -195,6 +221,33 @@ export default function ReadSpecification() {
                 <div style={{ marginTop: '10px' }}>
                     <Button className="control-button" onClick={closeCreateModal}>Отменить</Button>
                 </div>
+            </Modal>
+            <Modal isOpen={modalIsOpen} onRequestClose={closeModal}>
+                <h2>Расчет на дату</h2>
+                <Input 
+                    label="Дата операции" 
+                    name="Dateoperation" 
+                    value={dateForCalculation} 
+                    onChange={handleDateInputChange} 
+                />
+                <Button className="control-button" onClick={getDataforDate}>Расчитать</Button>
+                <Table singleLine>
+                    <Table.Header>
+                        <Table.Row>
+                            <Table.HeaderCell>Название продукта</Table.HeaderCell>
+                            <Table.HeaderCell>Общее количество</Table.HeaderCell>
+                        </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                        {tableData.map((data, index) => (
+                            <Table.Row key={index}>
+                                <Table.Cell>{data.Description}</Table.Cell>
+                                <Table.Cell>{data.TotalQuantity}</Table.Cell>
+                            </Table.Row>
+                        ))}
+                    </Table.Body>
+                </Table>
+                <Button className="control-button" onClick={closeModal}>Закрыть</Button>
             </Modal>
         </div>
     );

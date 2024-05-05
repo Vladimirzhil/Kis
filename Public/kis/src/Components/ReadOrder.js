@@ -103,12 +103,12 @@ export default function ReadSpecification() {
             <Table singleLine>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell>SpecificationId</Table.HeaderCell>
-                        <Table.HeaderCell>Orderdate</Table.HeaderCell>
-                        <Table.HeaderCell>ClientName</Table.HeaderCell>
-                        <Table.HeaderCell>Count</Table.HeaderCell>
-                        <Table.HeaderCell>Update</Table.HeaderCell>
-                        <Table.HeaderCell>Delete</Table.HeaderCell>
+                        <Table.HeaderCell>Идентификатор спецификации</Table.HeaderCell>
+                        <Table.HeaderCell>Дата заказа</Table.HeaderCell>
+                        <Table.HeaderCell>Имя клиента</Table.HeaderCell>
+                        <Table.HeaderCell>Количество</Table.HeaderCell>
+                        <Table.HeaderCell>Обновить</Table.HeaderCell>
+                        <Table.HeaderCell>Удалить</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
 
@@ -129,29 +129,29 @@ export default function ReadSpecification() {
                     ))}
                 </Table.Body>
             </Table>
-            <Button className="control-button" onClick={openCreateModal}>Добавить</Button>
+            <Button className="custom-button" onClick={openCreateModal}>Добавить</Button>
             <Modal isOpen={updateModalIsOpen} onRequestClose={closeUpdateModal}>
-                <h2>Update Data</h2>
+                <h2>Обновить запись</h2>
                 <Input 
-                    label="SpecificationId" 
+                    label="Идентификатор спецификации" 
                     name="SpecificationId" 
                     value={formData.SpecificationId} 
                     onChange={handleInputChange} 
                 />
                 <Input 
-                    label="Orderdate" 
+                    label="Дата заказа" 
                     name="Orderdate" 
                     value={formData.Orderdate} 
                     onChange={handleInputChange} 
                 />
                 <Input 
-                    label="ClientName" 
+                    label="Имя клиента" 
                     name="ClientName" 
                     value={formData.ClientName} 
                     onChange={handleInputChange} 
                 />
                 <Input 
-                    label="Count" 
+                    label="Количество" 
                     name="Count" 
                     value={formData.Count} 
                     onChange={handleInputChange} 
@@ -164,27 +164,27 @@ export default function ReadSpecification() {
                 </div>
             </Modal>
             <Modal isOpen={createModalIsOpen} onRequestClose={closeCreateModal}>
-                <h2>Create Data</h2>
+                <h2>Добавить запись</h2>
                 <Input 
-                    label="SpecificationId" 
+                    label="Идентификатор спецификации" 
                     name="SpecificationId" 
                     value={formData.SpecificationId} 
                     onChange={handleInputChange} 
                 />
                 <Input 
-                    label="Orderdate" 
+                    label="Дата заказа" 
                     name="Orderdate" 
                     value={formData.Orderdate} 
                     onChange={handleInputChange} 
                 />
                 <Input 
-                    label="ClientName" 
+                    label="Имя клиента" 
                     name="ClientName" 
                     value={formData.ClientName} 
                     onChange={handleInputChange} 
                 />
                 <Input 
-                    label="Count" 
+                    label="Количество" 
                     name="Count" 
                     value={formData.Count} 
                     onChange={handleInputChange} 

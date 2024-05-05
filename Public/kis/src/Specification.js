@@ -4,7 +4,7 @@ import ReadSpecification from './Components/ReadSpecification';
 function Specifications() {
   return (
     <div>
-      <h1>Specifications Interface</h1>
+      <h1>Спецификация</h1>
       <ReadSpecification/>
     </div>
   );

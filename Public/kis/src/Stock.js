@@ -4,7 +4,7 @@ import ReadStock from './Components/ReadStock';
 function Stock() {
   return (
     <div>
-      <h1>Stock Interface</h1>
+      <h1>Склад</h1>
       <ReadStock/>
     </div>
   );

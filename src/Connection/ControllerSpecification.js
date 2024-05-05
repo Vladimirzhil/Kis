@@ -17,6 +17,63 @@ router.get('/Get', (req, res) => {
         }
     });
 });
+router.get('/LowerLevel/:id', (req, res) => {
+    const { id } = req.params;
+
+    // Запрос для выборки нижнего уровня выбранного элемента
+    const lowerLevelQuery = `
+DECLARE @RootId INT = ?;  
+
+WITH Subcomponents AS (
+    SELECT
+        Id,
+        ParentId,
+        Description,
+        Measure,
+        CAST(1.0 AS FLOAT) AS TotalRequired  -- Явное указание типа данных
+    FROM specification
+    WHERE Id = @RootId  
+
+    UNION ALL
+
+    SELECT
+        s.Id,
+        s.ParentId,
+        s.Description,
+        s.Measure,
+        CAST(sc.TotalRequired * s.QuantityPerParent AS FLOAT) AS TotalRequired  
+    FROM specification s
+    INNER JOIN Subcomponents sc ON s.ParentId = sc.Id
+),
+LeafComponents AS (
+    SELECT *
+    FROM Subcomponents
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM specification
+        WHERE ParentId = Subcomponents.Id
+    )
+)
+SELECT
+    Id,
+    ParentId,
+    Description,
+    Measure,
+    SUM(TotalRequired) AS TotalRequiredForProduction
+FROM LeafComponents
+GROUP BY Id, ParentId, Description, Measure
+OPTION (MAXRECURSION 0);`;
+
+    sql.query(connectionString, lowerLevelQuery, [id], (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Database error', details: err.message });
+        } else {
+            res.status(200).json(result);
+        }
+    });
+});
+
 
 router.post('/Post', (req, res) => {
     const { ParentId, Description, QuantityPerParent, Measure } = req.body;
@@ -25,7 +82,7 @@ router.post('/Post', (req, res) => {
         return res.status(400).json({ message: ' ParentId, Description, QuantityPerParent, and Measure are required' });
     }
 
-    const query = "INSERT INTO Specification (ParentId, Description, QuantityPerParent, Measure) VALUES (?, ?, ?, ?)";
+    const query = "INSERT INTO Specification (ParentId, Description, QuantityPerParent, Measure) VALUES (NULLIF(?, 0), ?, ?, ?)";
     sql.query(connectionString, query, [ParentId, Description, QuantityPerParent, Measure], (err, result) => {
         if (err) {
             console.error(err);
@@ -60,7 +117,20 @@ router.put('/Put/:id', (req, res) => {
 router.delete('/Delete/:id', (req, res) => {
     const { id } = req.params;
 
-    const query = `DELETE FROM Specification WHERE Id=?`;
+    const query = `
+    WITH RecursiveDelete AS (
+        SELECT Id
+        FROM specification
+        WHERE Id = ? 
+    
+        UNION ALL
+    
+        SELECT t.Id
+        FROM specification t
+        INNER JOIN RecursiveDelete rd ON t.ParentId = rd.Id
+    )
+    DELETE FROM specification
+    WHERE Id IN (SELECT Id FROM RecursiveDelete);`;
     const values = [id];
 
     sql.query(connectionString, query, values, (err, result) => {
