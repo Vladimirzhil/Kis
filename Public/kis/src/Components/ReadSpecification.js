@@ -87,7 +87,6 @@ export default function ReadSpecification() {
     const closeUpdateModal = () => {
         setUpdateModalIsOpen(false);
     };
-    //adpkapdapdkapdo,a
 
     const openCreateModal = () => {
         setFormData({

@@ -11,6 +11,7 @@ export default function ReadSpecification() {
         Id: '',
         SpecificationId: '',
         Orderdate: '',
+        Status:'',
         ClientName: '',
         Count: ''
     });
@@ -23,6 +24,7 @@ export default function ReadSpecification() {
         localStorage.setItem('Id', data.Id);
         localStorage.setItem('SpecificationId', data.SpecificationId);
         localStorage.setItem('Orderdate', data.Orderdate);
+        localStorage.setItem('Status', data.Status);
         localStorage.setItem('ClientName', data.ClientName);
         localStorage.setItem('Count', data.Count);
     };
@@ -88,6 +90,7 @@ export default function ReadSpecification() {
             Id: '',
             SpecificationId: '',
             Orderdate: '',
+            Status:'',
             ClientName: '',
             Count: ''
         });
@@ -105,6 +108,7 @@ export default function ReadSpecification() {
                     <Table.Row>
                         <Table.HeaderCell>Идентификатор спецификации</Table.HeaderCell>
                         <Table.HeaderCell>Дата заказа</Table.HeaderCell>
+                        <Table.HeaderCell>Статус заказа</Table.HeaderCell>
                         <Table.HeaderCell>Имя клиента</Table.HeaderCell>
                         <Table.HeaderCell>Количество</Table.HeaderCell>
                         <Table.HeaderCell>Обновить</Table.HeaderCell>
@@ -117,6 +121,7 @@ export default function ReadSpecification() {
                         <Table.Row key={data.Id}>
                             <Table.Cell>{data.SpecificationId}</Table.Cell>
                             <Table.Cell>{data.Orderdate}</Table.Cell>
+                            <Table.Cell>{data.Status}</Table.Cell>
                             <Table.Cell>{data.ClientName}</Table.Cell>
                             <Table.Cell>{data.Count}</Table.Cell>
                             <Table.Cell>
@@ -142,6 +147,12 @@ export default function ReadSpecification() {
                     label="Дата заказа" 
                     name="Orderdate" 
                     value={formData.Orderdate} 
+                    onChange={handleInputChange} 
+                />
+                <Input 
+                    label="Статус заказа" 
+                    name="Status" 
+                    value={formData.Status} 
                     onChange={handleInputChange} 
                 />
                 <Input 
@@ -175,6 +186,12 @@ export default function ReadSpecification() {
                     label="Дата заказа" 
                     name="Orderdate" 
                     value={formData.Orderdate} 
+                    onChange={handleInputChange} 
+                />
+                <Input 
+                    label="Статус заказа" 
+                    name="Status" 
+                    value={formData.Status} 
                     onChange={handleInputChange} 
                 />
                 <Input 
