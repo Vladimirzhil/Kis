@@ -30,7 +30,7 @@ WITH Subcomponents AS (
         ParentId,
         Description,
         Measure,
-        CAST(1.0 AS FLOAT) AS TotalRequired  -- Явное указание типа данных
+        CAST(1.0 AS FLOAT) AS TotalRequired  
     FROM specification
     WHERE Id = @RootId  
 

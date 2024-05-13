@@ -112,6 +112,7 @@ export default function ReadSpecification() {
             <Table singleLine>
                 <Table.Header>
                     <Table.Row>
+                        <Table.HeaderCell>Идентификатор</Table.HeaderCell>
                         <Table.HeaderCell>Идентификатор родителя</Table.HeaderCell>
                         <Table.HeaderCell>Описание</Table.HeaderCell>
                         <Table.HeaderCell>Количестов на родителя</Table.HeaderCell>
@@ -125,6 +126,7 @@ export default function ReadSpecification() {
                 <Table.Body>
                     {APIData.map((data) => (
                         <Table.Row key={data.Id}>
+                            <Table.Cell>{data.Id}</Table.Cell>
                             <Table.Cell>{data.ParentId}</Table.Cell>
                             <Table.Cell>{data.Description}</Table.Cell>
                             <Table.Cell>{data.QuantityPerParent}</Table.Cell>

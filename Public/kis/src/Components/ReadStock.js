@@ -123,6 +123,15 @@ export default function ReadSpecification() {
                 console.error('Error fetching data:', error);
             });
     };
+    const getCompleteDecompositionforDate = () => {
+        axios.get(`http://localhost:3001/api/stocks/CompleteDecomposition/Date?Dateoperation=${dateForCalculation}`)
+            .then((response) => {
+                setTableData(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    };
 
     return (
         <div>
@@ -243,6 +252,27 @@ export default function ReadSpecification() {
                             <Table.Row key={index}>
                                 <Table.Cell>{data.Description}</Table.Cell>
                                 <Table.Cell>{data.TotalQuantity}</Table.Cell>
+                            </Table.Row>
+                        ))}
+                    </Table.Body>
+                </Table>
+                <Button className="control-button" onClick={getCompleteDecompositionforDate}>Расчитать</Button>
+                <Table singleLine>
+                    <Table.Header>
+                        <Table.Row>
+                            <Table.HeaderCell>Идентификатор</Table.HeaderCell>
+                            <Table.HeaderCell>Описание</Table.HeaderCell>
+                            <Table.HeaderCell>Измерение</Table.HeaderCell>
+                            <Table.HeaderCell>Общее количество</Table.HeaderCell>
+                        </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                        {tableData.map((data, index) => (
+                            <Table.Row key={index}>
+                                <Table.Cell>{data.Id}</Table.Cell>
+                                <Table.Cell>{data.Description1}</Table.Cell>
+                                <Table.Cell>{data.Measure}</Table.Cell>
+                                <Table.Cell>{data.TotalQuantity1}</Table.Cell>
                             </Table.Row>
                         ))}
                     </Table.Body>

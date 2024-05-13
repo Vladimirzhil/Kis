@@ -21,13 +21,82 @@ router.get('/Get', (req, res) => {
 router.get('/Get/Date', (req, res) => {
     const Dateoperation = req.query.Dateoperation;
 
-    console.log("Received Dateoperation:", Dateoperation); // Выводим в консоль значение параметра Dateoperation
-
     if (!Dateoperation) {
         return res.status(400).json({ message: 'Dateoperation are required' });
     }
 
     const query ='SELECT Specification.Description, SUM(Receivedquantity) - SUM(Shippedquantity) AS TotalQuantity FROM Stock INNER JOIN Specification ON Specification.id = Stock.SpecificationId WHERE Dateoperation <= CAST(? AS DATE)  GROUP BY Description';
+    sql.query(connectionString, query, [Dateoperation], (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        } else {
+            res.status(201).json(result);
+        }
+    });
+});
+
+router.get('/CompleteDecomposition/Date', (req, res) => {
+    const Dateoperation = req.query.Dateoperation;
+
+    if (!Dateoperation) {
+        return res.status(400).json({ message: 'Dateoperation are required' });
+    }
+
+    const query = `
+    DECLARE @DateOperation DATE = CAST(? AS DATE); 
+
+    WITH InitialStock AS (
+    SELECT
+        SpecificationId,
+        SUM(Receivedquantity) - SUM(Shippedquantity) AS TotalQuantity
+    FROM Stock
+    WHERE Dateoperation <= @DateOperation
+    GROUP BY SpecificationId
+),
+RecursiveComponents AS (
+    SELECT
+        s.Id,
+        s.ParentId,
+        s.Description,
+        s.Measure,
+        CAST(ISNULL(st.TotalQuantity, 0) AS FLOAT) AS TotalQuantity,
+        CASE 
+            WHEN EXISTS(SELECT 1 FROM Specification WHERE ParentId = s.Id) THEN 0 
+            ELSE 1 
+        END AS IsLeaf
+    FROM Specification s
+    LEFT JOIN InitialStock st ON s.Id = st.SpecificationId
+
+    UNION ALL
+
+    SELECT
+        s.Id,
+        s.ParentId,
+        s.Description,
+        s.Measure,
+        CAST(rc.TotalQuantity * s.QuantityPerParent AS FLOAT) AS TotalQuantity,
+        rc.IsLeaf
+    FROM Specification s
+    INNER JOIN RecursiveComponents rc ON s.ParentId = rc.Id
+),
+AggregatedComponents AS (
+    SELECT
+        Id,
+        Description,
+        Measure,
+        SUM(TotalQuantity) AS TotalQuantity,
+        MAX(IsLeaf) AS IsLeaf
+    FROM RecursiveComponents
+    GROUP BY Id, Description, Measure
+)
+SELECT Id, Description AS Description1, Measure, TotalQuantity AS TotalQuantity1
+FROM AggregatedComponents
+WHERE TotalQuantity > 0 AND IsLeaf = 1
+ORDER BY Id
+OPTION (MAXRECURSION 0);
+`;
+
     sql.query(connectionString, query, [Dateoperation], (err, result) => {
         if (err) {
             console.error(err);
