@@ -22,14 +22,6 @@ export default function ReadSpecification() {
         getData();
     }, []);
 
-    const setData = (data) => {
-        localStorage.setItem('Id', data.Id);
-        localStorage.setItem('SpecificationId', data.SpecificationId);
-        localStorage.setItem('Receivedquantity', data.Receivedquantity);
-        localStorage.setItem('Shippedquantity', data.Shippedquantity);
-        localStorage.setItem('Dateoperation', data.Dateoperation);
-    };
-
     const getData = () => {
         axios.get('http://localhost:3001/api/stocks/Get')
             .then((response) => {

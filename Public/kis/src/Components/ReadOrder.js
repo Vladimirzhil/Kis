@@ -15,19 +15,17 @@ export default function ReadSpecification() {
         ClientName: '',
         Count: ''
     });
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [dateForCalculation, setDateForCalculation] = useState('');
+    const [tableData, setTableData] = useState([]);
+    const [tableData1, setTableData1] = useState([]);
+    const [tableData2, setTableData2] = useState([]);
+    const [calculationResult, setCalculationResult] = useState([]);
 
     useEffect(() => {
         getData();
     }, []);
 
-    const setData = (data) => {
-        localStorage.setItem('Id', data.Id);
-        localStorage.setItem('SpecificationId', data.SpecificationId);
-        localStorage.setItem('Orderdate', data.Orderdate);
-        localStorage.setItem('Status', data.Status);
-        localStorage.setItem('ClientName', data.ClientName);
-        localStorage.setItem('Count', data.Count);
-    };
 
     const getData = () => {
         axios.get('http://localhost:3001/api/orders/Get')
@@ -101,6 +99,77 @@ export default function ReadSpecification() {
         setCreateModalIsOpen(false);
     };
 
+    const handleDateInputChange = (event) => {
+        const { value } = event.target;
+        setDateForCalculation(value);
+    };
+
+    const openModal = () => {
+        setModalIsOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalIsOpen(false);
+    };
+
+    const getCompleteDecompositionforDate = () => {
+        axios.get(`http://localhost:3001/api/orders/CompleteDecomposition/Date?Orderdate=${dateForCalculation}`)
+            .then((response) => {
+                setTableData(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    };
+
+    const subtractTotalQuantityById = () => {
+        const quantitiesById1 = {};
+        tableData1.forEach(item => {
+            quantitiesById1[item.Id] = item.TotalQuantity1;
+        });
+    
+        const quantitiesById2 = {};
+        tableData2.forEach(item => {
+            quantitiesById2[item.Id] = item.TotalQuantity1;
+        });
+    
+        const result = {};
+        Object.keys(quantitiesById1).forEach(id => {
+            if (quantitiesById2[id] !== undefined) {
+                result[id] = quantitiesById1[id] - quantitiesById2[id];
+            }
+        });
+    
+        setCalculationResult(result);
+    };
+
+    useEffect(() => {
+        setTableData1([]);
+        setTableData2([]);
+    }, [dateForCalculation]);
+
+    useEffect(() => {
+        if (tableData1.length > 0 && tableData2.length > 0) {
+            subtractTotalQuantityById();
+        }
+    }, [tableData1, tableData2]);
+
+    const getCalculationforDate = () => {
+        axios.get(`http://localhost:3001/api/stocks/CompleteDecomposition/Date?Dateoperation=${dateForCalculation}`)
+            .then((response1) => {
+                setTableData1(response1.data);
+                return axios.get(`http://localhost:3001/api/orders/CompleteDecomposition/Date?Orderdate=${dateForCalculation}`);
+            })
+            .then((response2) => {
+                setTableData2(response2.data);
+                subtractTotalQuantityById();
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    };
+
+
     return (
         <div>
             <Table singleLine>
@@ -135,6 +204,7 @@ export default function ReadSpecification() {
                 </Table.Body>
             </Table>
             <Button className="custom-button" onClick={openCreateModal}>Добавить</Button>
+            <Button className="custom-button" onClick={openModal}>Расчет на дату</Button>
             <Modal isOpen={updateModalIsOpen} onRequestClose={closeUpdateModal}>
                 <h2>Обновить запись</h2>
                 <Input 
@@ -212,6 +282,58 @@ export default function ReadSpecification() {
                 <div style={{ marginTop: '10px' }}>
                     <Button className="control-button" onClick={closeCreateModal}>Отменить</Button>
                 </div>
+            </Modal>
+            <Modal isOpen={modalIsOpen} onRequestClose={closeModal}>
+            <h2>Расчет на дату</h2>
+                <Input 
+                    label="Дата заказа" 
+                    name="Orderdate" 
+                    value={dateForCalculation} 
+                    onChange={handleDateInputChange} 
+                />
+            <Button className="control-button" onClick={getCompleteDecompositionforDate}>Расчитать</Button>
+                <Table singleLine>
+                    <Table.Header>
+                        <Table.Row>
+                            <Table.HeaderCell>Идентификатор</Table.HeaderCell>
+                            <Table.HeaderCell>Описание</Table.HeaderCell>
+                            <Table.HeaderCell>Измерение</Table.HeaderCell>
+                            <Table.HeaderCell>Общее количество</Table.HeaderCell>
+                        </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                        {tableData.map((data, index) => (
+                            <Table.Row key={index}>
+                                <Table.Cell>{data.Id}</Table.Cell>
+                                <Table.Cell>{data.Description1}</Table.Cell>
+                                <Table.Cell>{data.Measure}</Table.Cell>
+                                <Table.Cell>{data.TotalQuantity1}</Table.Cell>
+                            </Table.Row>
+                        ))}
+                    </Table.Body>
+                </Table>
+                <Button className="control-button" onClick={getCalculationforDate}>Расчитать</Button>
+                <Table singleLine>
+                    <Table.Header>
+                        <Table.Row>
+                            <Table.HeaderCell>Идентификатор</Table.HeaderCell>
+                            <Table.HeaderCell>Описание</Table.HeaderCell>
+                            <Table.HeaderCell>Измерение</Table.HeaderCell>
+                            <Table.HeaderCell>Результат расчета</Table.HeaderCell>
+                        </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                    {Object.keys(calculationResult).map((key) => (
+                            <Table.Row key={key}>
+                                <Table.Cell>{key}</Table.Cell>
+                                <Table.Cell>{tableData1.find(item => item.Id === parseInt(key, 10))?.Description1}</Table.Cell>
+                                <Table.Cell>{tableData1.find(item => item.Id === parseInt(key, 10))?.Measure}</Table.Cell>
+                                <Table.Cell>{calculationResult[key]}</Table.Cell>
+                            </Table.Row>
+                     ))}
+                    </Table.Body>
+                </Table>
+                <Button className="control-button" onClick={closeModal}>Закрыть</Button>
             </Modal>
         </div>
     );
